@@ -97,4 +97,25 @@ async function testLockBalanceIncr() {
   }
 }
 
-testLockBalanceIncr();
+async function testLockBalanceIncrSimple() {
+  try {
+    await redis.connect();
+    const userId = "1";
+    const amount = 1000;
+    await clearLockedBalance(userId);
+    let start = performance.now();
+    let newBalance = await lockBalanceIncr(userId, amount);
+    console.log(`lockBalanceIncr took ${performance.now() - start}ms`);
+    console.log(`Locked ${amount} for user ${userId}. Current locked balance: ${newBalance}`);
+    start = performance.now();
+    newBalance = await unlockBalanceIncr(userId, amount);
+    console.log(`unlockBalanceIncr took ${performance.now() - start}ms`);
+    console.log(`Unlocked ${amount} for user ${userId}. Current locked balance: ${newBalance}`);
+    const finalBalance = await getLockedBalance(userId);
+    console.log(`Final balance: ${finalBalance}`);
+  } finally {
+    await redis.quit();
+  }
+}
+
+testLockBalanceIncrSimple();
