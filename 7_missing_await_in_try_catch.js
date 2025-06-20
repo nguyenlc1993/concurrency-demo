@@ -1,0 +1,25 @@
+async function noAwaitInTryCatch() {
+  try {
+    return Promise.reject(new Error("test"));
+  } catch (error) {
+    console.log(`noAwaitInTryCatch: ${error}`);
+  }
+}
+
+async function awaitInTryCatch() {
+  try {
+    return await Promise.reject(new Error("test"));
+  } catch (error) {
+    console.log(`awaitInTryCatch: ${error}`);
+  }
+}
+
+async function main() {
+  const results = await Promise.allSettled([
+    awaitInTryCatch(),
+    noAwaitInTryCatch(),
+  ]);
+  console.log(results);
+}
+
+main();
